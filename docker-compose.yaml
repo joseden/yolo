@@ -1,22 +1,33 @@
 version: '3.8'
 services:
-# MongoDB service
-mongodb:
-image: mongo:5.0
+  # MongoDB service
+  mongodb:
+    image: mongo:5.0
+    container_name: yolo-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: yolo
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - yolo-network
 
-container_name: yolo-mongodb
-
-restart: unless-stopped
-
-ports:
-- "27017:27017"
-environment:
-MONGO_INITDB_ROOT_USERNAME: admin
-MONGO_INITDB_ROOT_PASSWORD: secret
-MONGO_INITDB_DATABASE: yolo
-
-volumes:
-- mongodb-data:/data/db
-
-networks:
-- yolo-network
+  # Backend service
+  backend:
+    build:
+      context: ./backend # Adjust path if needed
+      dockerfile: Dockerfile
+    container_name: yolo-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb://admin:secret@mongodb:27017/yolo?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - yolo-network
