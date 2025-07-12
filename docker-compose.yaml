@@ -18,7 +18,7 @@ services:
   # Backend service
   backend:
     build:
-      context: ./backend # Adjust path if needed
+      context: ./backend
       dockerfile: Dockerfile
     container_name: yolo-backend
     restart: unless-stopped
@@ -35,14 +35,14 @@ services:
   # Frontend service
   frontend:
     build:
-      context: ./client # Adjust path if needed
+      context: ./client
       dockerfile: Dockerfile
     container_name: yolo-client
     restart: unless-stopped
     ports:
       - "3000:80"
     environment:
-      REACT_APP_API_URL: http://localhost:3000
+      REACT_APP_API_URL: http://localhost:5000
     depends_on:
       - backend
     networks:
