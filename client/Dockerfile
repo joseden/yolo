@@ -1,6 +1,6 @@
-FROM node:20.11-alpine3.19 AS build
+FROM node:16-alpine AS build
 
-RUN apk update && apk upgrade --no-cache
+RUN apk update && apk upgrade --no-cache 
 
 WORKDIR /usr/src/app
 
