@@ -47,3 +47,10 @@ services:
       - backend
     networks:
       - yolo-network
+  
+  volumes:
+    mongodb-data:
+
+networks:
+  yolo-network:
+    driver: bridge
