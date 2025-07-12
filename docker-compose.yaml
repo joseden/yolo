@@ -1,4 +1,3 @@
-
 version: '3.8'
 
 services:
@@ -50,11 +49,11 @@ services:
     networks:
       - yolo-network
 
-
+# Volumes at root level - NOT indented under services
 volumes:
   mongodb-data:
 
-
+# Networks at root level
 networks:
   yolo-network:
     driver: bridge

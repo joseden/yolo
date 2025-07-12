@@ -7,7 +7,7 @@ const upload = multer();
 const productRoute = require('./routes/api/productRoute');
 
 // Database configuration
-const dbName = 'yolo'; // Match docker-compose database name
+const dbName = 'yolo'; 
 
 
 const mongoUri = process.env.MONGO_URI || 'mongodb://admin:secret@localhost:27017/yolo?authSource=admin';
