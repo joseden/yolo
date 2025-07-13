@@ -194,3 +194,39 @@ docker-compose logs frontend
 docker-compose down
 docker-compose up -d
 # Products still exist after restart 
+
+
+# 7. Docker Image Tag Naming Standards
+
+Naming Convention Adopted
+
+[dockerhub-username]/[service-name]:[version]
+
+Implemented Tags
+
+# Backend Images
+joseden/yolo-backend:v1.0.0   
+joseden/yolo-backend:latest    
+
+# Frontend Images  
+joseden/yolo-frontend:v1.0.0  
+joseden/yolo-frontend:latest   
+
+
+# 8. Gitflow 
+
+1. cleared files
+2. client frontend dockerfile
+3. revert base image 16 and npm dependencies
+4. backend dockerfile created
+5. client dockerfile port reverted to 80
+6. added local mongodb service
+7. added bankend service and corrected syntax of yaml
+8. added frontend service
+9. delete miscellaneous comments
+10. docker network bridge
+11. correct syntax
+12. revert to previous file
+13. docker login, tag, push image successful
+14. First READ.ME update
+15. Complete READ.ME
