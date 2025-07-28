@@ -58,4 +58,4 @@ volumes:
 # Networks at root level
 networks:
   yolo-network:
-    driver: bridge
+    driver: bridge 
