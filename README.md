@@ -231,5 +231,3 @@ joseden/yolo-frontend:latest
 14. First READ.ME update
 15. Complete READ.ME
 
-
-d
