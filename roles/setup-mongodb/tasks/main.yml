@@ -1,14 +1,17 @@
 ---
-- name: Run MongoDB Container
+- name: Create Docker network
+  docker_network:
+    name: "{{ docker_network }}"
+- name: Run MongoDB container
   docker_container:
-    name: app-mongo
-    image: mongo
-    ports:
-      - '27017:27017'
-    volumes:
-      - ./app-mongo-data:/data/db
+    name: "{{ app_name }}-mongodb"
+    image: mongo:5.0
+    state: started
     networks:
-      - name: app-net
-  tags:
-    - database
-    - backend
+      - name: "{{ docker_network }}"
+    ports:
+      - "27017:27017"
+- name: Wait for MongoDB
+  wait_for:
+    port: 27017
+    delay: 5
