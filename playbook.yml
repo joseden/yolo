@@ -1,93 +1,32 @@
 ---
-- name: Deploy YOLO Application Stack
+- name: Deploy YOLO Application
   hosts: localhost
   connection: local
   become: yes
-  vars:
-    app_dir: /vagrant
-    mongo_creds:
-      username: admin
-      password: secret
-      database: yolo
-
-  tasks:
-    - name: Install required system packages
-      apt:
-        name: [docker.io, docker-compose, python3-pip]
-        state: present
-        update_cache: yes
-
-    - name: Install Docker SDK for Python
-      pip:
-        name: docker
-        state: present
-
-    - name: Ensure Docker service is running
-      service:
-        name: docker
-        state: started
-        enabled: yes
-
-    - name: Create application network
-      community.docker.docker_network:
-        name: yolo-network
-        state: present
-
-    - name: Deploy MongoDB
-      community.docker.docker_container:
-        name: yolo-mongodb
-        image: mongo:5.0
-        state: started
-        restart_policy: always
-        networks:
-          - name: yolo-network
-        env:
-          MONGO_INITDB_ROOT_USERNAME: "{{ mongo_creds.username }}"
-          MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_creds.password }}"
-        volumes:
-          - yolo-mongodb-data:/data/db
-
-    - name: Build and deploy backend
-      community.docker.docker_container:
-        name: yolo-backend
-        build:
-          path: "{{ app_dir }}/backend"
-        state: started
-        restart_policy: always
-        networks:
-          - name: yolo-network
-        ports:
-          - "5000:5000"
-        env:
-          MONGO_URI: "mongodb://{{ mongo_creds.username }}:{{ mongo_creds.password }}@yolo-mongodb:27017/{{ mongo_creds.database }}?authSource=admin"
-        depends_on:
-          - yolo-mongodb
-
-    - name: Build and deploy frontend
-      community.docker.docker_container:
-        name: yolo-frontend
-        build:
-          path: "{{ app_dir }}/client"
-          args:
-            REACT_APP_API_URL: "http://localhost:5000"
-        state: started
-        restart_policy: always
-        networks:
-          - name: yolo-network
-        ports:
-          - "3000:3000"
-        depends_on:
-          - yolo-backend
-
-    - name: Create persistent volume for MongoDB
-      community.docker.docker_volume:
-        name: yolo-mongodb-data
-        state: present
-
-    - name: Show deployment info
+  
+  vars_files:
+    - group_vars/all/main.yml
+  
+  pre_tasks:
+    - name: Display deployment info
       debug:
         msg:
-          - "Application deployment complete!"
-          - "Frontend URL: http://localhost:3000"
-          - "Backend URL: http://localhost:5000"
-          - "MongoDB connection: mongodb://{{ mongo_creds.username }}:{{ mongo_creds.password }}@localhost:27017/{{ mongo_creds.database }}"
+          - "Starting YOLO Deployment"
+          - "Frontend Port: {{ frontend_port }}"
+          - "Backend Port: {{ backend_port }}"
+          - "MongoDB Port: {{ mongodb_port }}"
+  
+  roles:
+    - common
+    - mongodb
+    - backend
+    - frontend
+    
+  post_tasks:
+    - name: Deployment summary
+      debug:
+        msg:
+          - "✅ Deployment successful!"
+          - "Frontend URL: http://localhost:{{ frontend_port }}"
+          - "Backend URL: http://localhost:{{ backend_port }}"
+          - "MongoDB URL: mongodb://{{ mongodb_user }}:{{ mongodb_pass }}@localhost:{{ mongodb_port }}/{{ mongodb_database }}"

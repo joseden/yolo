@@ -1,10 +1,33 @@
 ---
 - name: Install Docker
-  apt:
-    name: [docker.io, python3-docker]
+  block:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        
+    - name: Install Docker
+      apt:
+        name: [docker.io, docker-compose]
+        state: present
+        
+    - name: Install Python Docker library
+      apt:
+        name: [python3-docker, python3-pip]
+        state: present
+        
+    - name: Install Docker SDK
+      pip:
+        name: docker
+        
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+  tags: ['docker', 'setup']
+
+- name: Create Docker network
+  community.docker.docker_network:
+    name: "{{ network_name }}"
     state: present
-    update_cache: yes
-- name: Start Docker
-  service:
-    name: docker
-    state: started
+  tags: ['network', 'setup']

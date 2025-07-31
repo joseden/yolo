@@ -10,28 +10,36 @@ Vagrant.configure("2") do |config|
     ]
   end
 
-  
-  config.vm.network "forwarded_port", guest: 3000, host: 3000, auto_correct: true
-  config.vm.network "forwarded_port", guest: 5000, host: 5000, auto_correct: true
+  config.vm.network "forwarded_port", guest: 3000, host: 3333, auto_correct: true
+  config.vm.network "forwarded_port", guest: 5000, host: 5555, auto_correct: true
+  config.vm.network "forwarded_port", guest: 27017, host: 27777, auto_correct: true
 
   config.vm.provision "shell", inline: <<-SHELL
-  
-    ansible-galaxy collection install community.docker
-    
+    # Install required components
+    apt-get update
+    apt-get install -y python3-pip
     pip3 install docker
     
+    # Install Ansible Docker collection
+    ansible-galaxy collection install community.docker
+    
+    # Create group_vars directory
+    mkdir -p /vagrant/group_vars/all
+    
+    # Create roles structure
+    mkdir -p /vagrant/roles/{common,mongodb,backend,frontend}/tasks
+    
+    # Run playbook
     cd /vagrant
     ansible-playbook -i 'localhost,' -c local playbook.yml
     
-    # Run health checks
-    echo -e "\n\n=== Deployment Status ==="
-    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "yolo|NAMES"
+    # Test deployment
+    echo -e "\n=== Deployment Test ==="
+    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep yolo
     
-    echo -e "\nTesting endpoints (might take a moment for apps to start):"
-    sleep 10  # Wait for services to initialize
-    curl -s -o /dev/null -w "Frontend (3000): %{http_code}\n" http://localhost:3000
-    curl -s -o /dev/null -w "Backend (5000): %{http_code}\n" http://localhost:5000
-    
-    echo -e "\n✅ Deployment complete! Access your app at: http://localhost:3000"
+    echo -e "\nEndpoints:"
+    echo "Frontend: http://localhost:3333"
+    echo "Backend:  http://localhost:5555"
+    echo "MongoDB:  mongodb://localhost:27777"
   SHELL
 end

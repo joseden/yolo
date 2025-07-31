@@ -1,21 +1,28 @@
 ---
-- name: Run MongoDB
-  docker_container:
-    name: yolo-mongodb
-    image: mongo:5.0
-    state: started
-    networks:
-      - name: yolo-network
-    ports:
-      - "27777:27017"
-    env:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: yolo
-    volumes:
-      - mongodb-data:/data/db
-
-- name: Wait for MongoDB
-  wait_for:
-    port: 27777
-    delay: 5
+- name: Deploy MongoDB
+  block:
+    - name: Pull MongoDB image
+      community.docker.docker_image:
+        name: "{{ mongodb_image }}"
+        source: pull
+        
+    - name: Run MongoDB container
+      community.docker.docker_container:
+        name: "{{ mongodb_container }}"
+        image: "{{ mongodb_image }}"
+        state: started
+        restart_policy: always
+        networks:
+          - name: "{{ network_name }}"
+        ports:
+          - "{{ mongodb_port }}:27017"
+        env:
+          MONGO_INITDB_ROOT_USERNAME: "{{ mongodb_user }}"
+          MONGO_INITDB_ROOT_PASSWORD: "{{ mongodb_pass }}"
+          
+    - name: Wait for MongoDB
+      wait_for:
+        port: "{{ mongodb_port }}"
+        delay: 5
+        timeout: 60
+  tags: ['mongodb', 'database']

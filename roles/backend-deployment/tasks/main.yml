@@ -1,24 +1,32 @@
----
-- name: Build backend image
-  docker_image:
-    name: yolo-backend
-    build:
-      path: /vagrant/backend
-    source: build
-
-- name: Run backend
-  docker_container:
-    name: yolo-backend
-    image: yolo-backend
-    state: started
-    networks:
-      - name: yolo-network
-    ports:
-      - "5555:5000"
-    env:
-      MONGO_URI: mongodb://admin:secret@yolo-mongodb:27017/yolo?authSource=admin
-
-- name: Wait for backend
-  wait_for:
-    port: 5555
-    delay: 5
+----
+- name: Deploy Backend
+  block:
+    - name: Build backend image
+      community.docker.docker_image:
+        name: "{{ backend_container }}"
+        build:
+          path: "{{ backend_path }}"
+        source: build
+        force_source: yes
+        
+    - name: Run backend container
+      community.docker.docker_container:
+        name: "{{ backend_container }}"
+        image: "{{ backend_container }}"
+        state: started
+        restart_policy: always
+        networks:
+          - name: "{{ network_name }}"
+        ports:
+          - "{{ backend_port }}:5000"
+        env:
+          MONGO_URI: "mongodb://{{ mongodb_user }}:{{ mongodb_pass }}@{{ mongodb_container }}:27017/{{ mongodb_database }}?authSource=admin"
+        depends_on:
+          - "{{ mongodb_container }}"
+          
+    - name: Wait for backend
+      wait_for:
+        port: "{{ backend_port }}"
+        delay: 5
+        timeout: 60
+  tags: ['backend', 'api']
