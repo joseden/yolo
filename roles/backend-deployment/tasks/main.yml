@@ -1,19 +1,24 @@
 ---
 - name: Build backend image
   docker_image:
-    name: "{{ app_name }}/backend"
+    name: yolo-backend
     build:
-      path: "{{ project_dir }}/backend"
+      path: /vagrant/backend
     source: build
-    force_source: yes
-- name: Run backend container
+
+- name: Run backend
   docker_container:
-    name: "{{ app_name }}-backend"
-    image: "{{ app_name }}/backend"
+    name: yolo-backend
+    image: yolo-backend
     state: started
     networks:
-      - name: "{{ docker_network }}"
+      - name: yolo-network
     ports:
-      - "5000:5000"
+      - "5555:5000"
     env:
-      MONGODB_URI: "mongodb://{{ app_name }}-mongodb:27017/yolodb"
+      MONGO_URI: mongodb://admin:secret@yolo-mongodb:27017/yolo?authSource=admin
+
+- name: Wait for backend
+  wait_for:
+    port: 5555
+    delay: 5
