@@ -1,0 +1,19 @@
+---
+- name: Build frontend image
+  docker_image:
+    name: "{{ app_name }}/frontend"
+    build:
+      path: "{{ project_dir }}/client"
+    source: build
+    force_source: yes
+- name: Run frontend container
+  docker_container:
+    name: "{{ app_name }}-frontend"
+    image: "{{ app_name }}/frontend"
+    state: started
+    networks:
+      - name: "{{ docker_network }}"
+    ports:
+      - "3000:3000"
+    env:
+      REACT_APP_API_URL: "http://localhost:5000"
