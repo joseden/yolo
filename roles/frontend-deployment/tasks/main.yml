@@ -1,19 +1,24 @@
 ---
 - name: Build frontend image
   docker_image:
-    name: "{{ app_name }}/frontend"
+    name: yolo-client
     build:
-      path: "{{ project_dir }}/client"
+      path: /vagrant/client
     source: build
-    force_source: yes
-- name: Run frontend container
+
+- name: Run frontend
   docker_container:
-    name: "{{ app_name }}-frontend"
-    image: "{{ app_name }}/frontend"
+    name: yolo-client
+    image: yolo-client
     state: started
     networks:
-      - name: "{{ docker_network }}"
+      - name: yolo-network
     ports:
-      - "3000:3000"
+      - "3333:80"
     env:
-      REACT_APP_API_URL: "http://localhost:5000"
+      REACT_APP_API_URL: http://localhost:5555
+
+- name: Wait for frontend
+  wait_for:
+    port: 3333
+    delay: 5
