@@ -1,17 +1,21 @@
 ---
-- name: Create Docker network
-  docker_network:
-    name: "{{ docker_network }}"
-- name: Run MongoDB container
+- name: Run MongoDB
   docker_container:
-    name: "{{ app_name }}-mongodb"
+    name: yolo-mongodb
     image: mongo:5.0
     state: started
     networks:
-      - name: "{{ docker_network }}"
+      - name: yolo-network
     ports:
-      - "27017:27017"
+      - "27777:27017"
+    env:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: yolo
+    volumes:
+      - mongodb-data:/data/db
+
 - name: Wait for MongoDB
   wait_for:
-    port: 27017
+    port: 27777
     delay: 5
