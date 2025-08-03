@@ -1,32 +1,23 @@
 ---
-- name: Deploy Frontend
-  block:
-    - name: Build frontend image
-      community.docker.docker_image:
-        name: "{{ frontend_container }}"
-        build:
-          path: "{{ frontend_path }}"
-          args:
-            REACT_APP_API_URL: "{{ api_url }}"
-        source: build
-        force_source: yes
-        
-    - name: Run frontend container
-      community.docker.docker_container:
-        name: "{{ frontend_container }}"
-        image: "{{ frontend_container }}"
-        state: started
-        restart_policy: always
-        networks:
-          - name: "{{ network_name }}"
-        ports:
-          - "{{ frontend_port }}:3000"
-        depends_on:
-          - "{{ backend_container }}"
-          
-    - name: Wait for frontend
-      wait_for:
-        port: "{{ frontend_port }}"
-        delay: 5
-        timeout: 60
-  tags: ['frontend', 'ui']
+# Backend Role: Run the API server
+# This pulls and runs the backend from Docker Hub
+
+- name: Ensure Docker network exists
+  docker_network:
+    name: app-net
+
+- name: Pull backend image from Docker Hub
+  docker_image:
+    name: joseden/yolo-backend
+    source: pull
+
+- name: Run backend container
+  docker_container:
+    name: brian-yolo-backend
+    image: joseden/yolo-backend
+    networks:
+      - name: app-net
+    ports:
+      - "5000:5000"
+    restart_policy: always
+  become: yes

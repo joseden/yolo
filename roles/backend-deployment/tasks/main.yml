@@ -1,32 +1,23 @@
-----
-- name: Deploy Backend
-  block:
-    - name: Build backend image
-      community.docker.docker_image:
-        name: "{{ backend_container }}"
-        build:
-          path: "{{ backend_path }}"
-        source: build
-        force_source: yes
-        
-    - name: Run backend container
-      community.docker.docker_container:
-        name: "{{ backend_container }}"
-        image: "{{ backend_container }}"
-        state: started
-        restart_policy: always
-        networks:
-          - name: "{{ network_name }}"
-        ports:
-          - "{{ backend_port }}:5000"
-        env:
-          MONGO_URI: "mongodb://{{ mongodb_user }}:{{ mongodb_pass }}@{{ mongodb_container }}:27017/{{ mongodb_database }}?authSource=admin"
-        depends_on:
-          - "{{ mongodb_container }}"
-          
-    - name: Wait for backend
-      wait_for:
-        port: "{{ backend_port }}"
-        delay: 5
-        timeout: 60
-  tags: ['backend', 'api']
+---
+# Backend Role: Run the API server
+# This pulls and runs the backend from Docker Hub
+
+- name: Ensure Docker network exists
+  docker_network:
+    name: app-net
+
+- name: Pull backend image from Docker Hub
+  docker_image:
+    name: joseden/yolo-backend
+    source: pull
+
+- name: Run backend container
+  docker_container:
+    name: brian-yolo-backend
+    image: joseden/yolo-backend
+    networks:
+      - name: app-net
+    ports:
+      - "5000:5000"
+    restart_policy: always
+  become: yes
