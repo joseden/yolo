@@ -1,2 +1,2 @@
-[local]
-default ansible_connection=docker ansible_host=default
+[all]
+yolo_default_1754242979 ansible_connection=docker ansible_user=root

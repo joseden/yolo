@@ -1,5 +1,5 @@
 ---
-- name: Pull frontend image from Docker Hub
+- name: Pull frontend image
   docker_image:
     name: joseden/yolo-frontend
     source: pull
@@ -7,10 +7,11 @@
 - name: Run frontend container
   docker_container:
     name: brian-yolo-frontend
-    image: joseden/yolo-client
+    image: joseden/yolo-frontend
     networks:
       - name: app-net
     ports:
       - "3000:80"
-    restart_policy: always
-  become: yes 
+    restart_policy: unless-stopped
+    env:
+      REACT_APP_API_URL: http://localhost:5000

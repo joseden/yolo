@@ -1,14 +1,18 @@
 ---
-- name: Run MongoDB Container
+- name: Create Docker network
+  docker_network:
+    name: app-net
+    driver: bridge
+
+- name: Run MongoDB container
   docker_container:
     name: app-mongo
-    image: mongo
+    image: mongo:5.0
     ports:
-      - '27017:27017'
-    volumes:
-      - ./app-mongo-data:/data/db
+      - "27017:27017"
     networks:
       - name: app-net
-  tags:
-    - database
-    - backend
+    restart_policy: unless-stopped
+    env:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret

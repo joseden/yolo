@@ -1,0 +1,34 @@
+---
+- name: Deploy YOLO E-commerce Application
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+    
+    - name: Install Docker SDK for Python
+      pip:
+        name: docker
+        state: present
+    
+    - name: Verify Docker is accessible
+      command: docker info
+      register: docker_status
+    
+    - name: Show Docker status
+      debug:
+        msg: "Docker is working!"
+      when: docker_status.rc == 0
+  
+  roles:
+    - setup-mongodb
+    - backend-deployment
+    - frontend-deployment

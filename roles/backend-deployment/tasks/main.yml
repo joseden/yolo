@@ -1,12 +1,5 @@
 ---
-# Backend Role: Run the API server
-# This pulls and runs the backend from Docker Hub
-
-- name: Ensure Docker network exists
-  docker_network:
-    name: app-net
-
-- name: Pull backend image from Docker Hub
+- name: Pull backend image
   docker_image:
     name: joseden/yolo-backend
     source: pull
@@ -19,5 +12,6 @@
       - name: app-net
     ports:
       - "5000:5000"
-    restart_policy: always
-  become: yes
+    restart_policy: unless-stopped
+    env:
+      MONGO_URI: mongodb://admin:secret@app-mongo:27017/yolo?authSource=admin
