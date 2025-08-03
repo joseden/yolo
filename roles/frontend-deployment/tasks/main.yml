@@ -1,23 +1,16 @@
 ---
-# Backend Role: Run the API server
-# This pulls and runs the backend from Docker Hub
-
-- name: Ensure Docker network exists
-  docker_network:
-    name: app-net
-
-- name: Pull backend image from Docker Hub
+- name: Pull frontend image from Docker Hub
   docker_image:
-    name: joseden/yolo-backend
+    name: joseden/yolo-frontend
     source: pull
 
-- name: Run backend container
+- name: Run frontend container
   docker_container:
-    name: brian-yolo-backend
-    image: joseden/yolo-backend
+    name: brian-yolo-frontend
+    image: joseden/yolo-client
     networks:
       - name: app-net
     ports:
-      - "5000:5000"
+      - "3000:80"
     restart_policy: always
-  become: yes
+  become: yes 
