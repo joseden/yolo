@@ -19,8 +19,10 @@ spec:
         ports:
         - containerPort: 5000
         env:
-        - name: MONGO_URL
-          value: "mongodb://mongodb-sts:27017/yolodb"  
+        - name: MONGO_URI 
+          value: "mongodb://mongodb:27017/yolo"  
+        - name: CLIENT_URL
+          value: "http://frontend"
 ---
 apiVersion: v1
 kind: Service
