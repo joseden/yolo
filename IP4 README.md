@@ -1,4 +1,20 @@
-## IP 4 
+## IP 4 PROJECT
+
+
+## GIT COMMITS
+
+1. debug: Document systematic troubleshooting approach for data persistence
+2. feat: Configure LoadBalancer for external access and high availability  
+3. feat: Implement AWS EBS persistent storage with dynamic provisioning
+4. test: Verify service discovery and pod connectivity
+5. fix: Configure environment variables for database connectivity
+6.  docs: Add comprehensive project documentation and assessment objectives
+7. frontend.yaml deployment
+8.  backend.yaml deployment  
+9. mongodb-statefulset.yaml
+10. added namespace.yaml
+
+
 
 ## 🌐 **Live Application**
 **🔗 Frontend URL**: `http://a3c7e2f5b1df341b9ac1fdbd8f1f1b1d-987684264.us-east-1.elb.amazonaws.com`
